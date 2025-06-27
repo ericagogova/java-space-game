@@ -74,7 +74,10 @@ public class Panel extends JPanel implements ActionListener, KeyListener {
     private boolean endGame = false;
 	/*Image of the background */
     private Image bg;
-	private int frameCounter = 0;
+
+	  private PowerUpFuel fuel;
+	  private int frameCounter = 0;
+	  private int fuelEffectDuration = 300;
 
 
 
@@ -107,7 +110,8 @@ public class Panel extends JPanel implements ActionListener, KeyListener {
 
         }
 
-        timer = new Timer(16, this);// ~= 60fps.
+
+		timer = new Timer(16, this);// ~= 60fps.
         timer.start();//Starting the thread.
 
     }
@@ -190,6 +194,15 @@ public class Panel extends JPanel implements ActionListener, KeyListener {
 
         g2d.drawImage(ship.getImage(), ship.getX(), ship.getY() - 25/*the height of the image*/, this);
 
+		if (fuel!= null && fuel.getImage() != null) {
+			if (!fuel.fuelCheck()){
+				g2d.drawImage(fuel.getImage(), fuel.getX(), fuel.getY(), this);
+			}
+		}
+		else{
+			//System.out.println("Fuel is "+frameCounter);
+
+		}
     }
 
     /**
@@ -200,7 +213,40 @@ public class Panel extends JPanel implements ActionListener, KeyListener {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
+		frameCounter++;
+		if (fuel != null && !fuel.fuelCheck()) {
+			fuel.checkForCollision(ammos);
 
+		}
+
+		if (fuel != null && fuel.fuelCheck()){
+
+			// or 300 if using frames
+			// Set all ammo to be fast
+
+			for (Ammo ammo : ammos) {
+				ammo.setFirespeed();
+			}
+
+
+
+			fuelEffectDuration--;
+			System.out.println(fuelEffectDuration);
+			if (fuelEffectDuration <= 0) {
+					fuel.changefuelhit();// end the powerup
+
+					fuelEffectDuration = 300;
+					// Reset ammo speeds if needed
+					for (Ammo ammo : ammos) {
+						ammo.resetSpeed(); // You may need to make this method
+
+				}
+			}
+
+		}
+		if (frameCounter == 100) {
+			fuel= new PowerUpFuel();
+		}
     	//if stage is beaten this if statement is responsible for the setup for the next stage.
     	if(restart){
 			for(int i=0; i<numUfo; i++){
@@ -276,7 +322,7 @@ public class Panel extends JPanel implements ActionListener, KeyListener {
 		// 2. Check collisions and respond
 
 
-        repaint();//Calls the paintComponent method.
+		repaint();//Calls the paintComponent method.
     }
 
 	/**

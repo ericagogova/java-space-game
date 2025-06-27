@@ -30,6 +30,7 @@ public class Ammo {
     private Image image;
     /*This boolean variable is used for the shot system*/
     private boolean check = false;
+	private boolean updatedSpeed = false;
 
     /**
      * The Constructor.
@@ -87,6 +88,19 @@ public class Ammo {
 		dy = 5;
 	}
 
+	public void setFirespeed() {
+		if (this.dy<=5) {
+			this.dy = this.dy * 3;
+			updatedSpeed=true;
+		}
+
+	}
+
+
+
+	public void resetSpeed() {
+			this.dy = 5;
+	}
     /**
      * if the player typed the right keyboard button
      * the dx value increases, so the object moves right.
