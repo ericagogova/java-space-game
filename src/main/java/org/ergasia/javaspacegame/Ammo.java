@@ -87,6 +87,9 @@ public class Ammo {
 		dy = 5;
 	}
 
+	public void setFirespeed() {
+		this.dy= this.dy*100;
+	}
     /**
      * if the player typed the right keyboard button
      * the dx value increases, so the object moves right.

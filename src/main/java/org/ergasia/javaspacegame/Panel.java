@@ -74,6 +74,8 @@ public class Panel extends JPanel implements ActionListener, KeyListener {
     private boolean endGame = false;
 	/*Image of the background */
     private Image bg;
+	private PowerUpFuel fuel;
+	private int frameCounter = 0;
 
 
 	/**
@@ -104,7 +106,8 @@ public class Panel extends JPanel implements ActionListener, KeyListener {
         	ufos.add(new Ufo()); //Creating the Ufo Objects
         }
 
-        timer = new Timer(16, this);// ~= 60fps.
+
+		timer = new Timer(16, this);// ~= 60fps.
         timer.start();//Starting the thread.
 
     }
@@ -187,6 +190,15 @@ public class Panel extends JPanel implements ActionListener, KeyListener {
 
         g2d.drawImage(ship.getImage(), ship.getX(), ship.getY() - 25/*the height of the image*/, this);
 
+		if (fuel!= null && fuel.getImage() != null) {
+			if (!fuel.fuelCheck()){
+				g2d.drawImage(fuel.getImage(), fuel.getX(), fuel.getY(), this);
+			}
+		}
+		else{
+			System.out.println("Fuel is "+frameCounter);
+
+		}
     }
 
     /**
@@ -197,7 +209,25 @@ public class Panel extends JPanel implements ActionListener, KeyListener {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
+		frameCounter++;
+		if (fuel != null && !fuel.fuelCheck()) {
+			fuel.checkForCollision(ammos);
+		}
+		int duration = 300;
+		if (fuel != null && fuel.isActive()){
+			for(int i=0; i<ammos.size(); i++){
+				ammos.get(i).setFirespeed();;
+			}
 
+			duration --;
+			if (duration <=0) {
+				fuel.setActive(false);
+			}
+
+		}
+		if (frameCounter == 200) {
+			fuel= new PowerUpFuel();
+		}
     	//if stage is beaten this if statement is responsible for the setup for the next stage.
     	if(restart){
 			for(int i=0; i<numUfo; i++){
@@ -245,7 +275,7 @@ public class Panel extends JPanel implements ActionListener, KeyListener {
 		}
 
 
-        repaint();//Calls the paintComponent method.
+		repaint();//Calls the paintComponent method.
     }
 
 	/**
