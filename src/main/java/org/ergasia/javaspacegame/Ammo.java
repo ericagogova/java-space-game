@@ -30,6 +30,7 @@ public class Ammo {
     private Image image;
     /*This boolean variable is used for the shot system*/
     private boolean check = false;
+	private boolean updatedSpeed = false;
 
     /**
      * The Constructor.
@@ -88,7 +89,17 @@ public class Ammo {
 	}
 
 	public void setFirespeed() {
-		this.dy= this.dy*100;
+		if (this.dy<=5) {
+			this.dy = this.dy * 3;
+			updatedSpeed=true;
+		}
+
+	}
+
+
+
+	public void resetSpeed() {
+			this.dy = 5;
 	}
     /**
      * if the player typed the right keyboard button

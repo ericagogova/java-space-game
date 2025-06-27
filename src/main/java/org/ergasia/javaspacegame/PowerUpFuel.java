@@ -69,6 +69,7 @@ public class PowerUpFuel {
                     image = null;
                     fuelhit = true;
                     boolean isActive = true;
+
                 }
             }
 
@@ -79,11 +80,10 @@ public class PowerUpFuel {
         return fuelhit;
     }
 
-    public boolean isActive(){
-        return isActive;
-    }
 
-    public void setActive(boolean active) {
-        this.isActive = active;
+
+    public void changefuelhit() {
+        this.fuelhit = false;
+     ;
     }
 }

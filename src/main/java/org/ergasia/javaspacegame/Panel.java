@@ -76,6 +76,7 @@ public class Panel extends JPanel implements ActionListener, KeyListener {
     private Image bg;
 	private PowerUpFuel fuel;
 	private int frameCounter = 0;
+	private int fuelEffectDuration = 300;
 
 
 	/**
@@ -196,7 +197,7 @@ public class Panel extends JPanel implements ActionListener, KeyListener {
 			}
 		}
 		else{
-			System.out.println("Fuel is "+frameCounter);
+			//System.out.println("Fuel is "+frameCounter);
 
 		}
     }
@@ -212,20 +213,35 @@ public class Panel extends JPanel implements ActionListener, KeyListener {
 		frameCounter++;
 		if (fuel != null && !fuel.fuelCheck()) {
 			fuel.checkForCollision(ammos);
-		}
-		int duration = 300;
-		if (fuel != null && fuel.isActive()){
-			for(int i=0; i<ammos.size(); i++){
-				ammos.get(i).setFirespeed();;
-			}
-
-			duration --;
-			if (duration <=0) {
-				fuel.setActive(false);
-			}
 
 		}
-		if (frameCounter == 200) {
+
+		if (fuel != null && fuel.fuelCheck()){
+
+			// or 300 if using frames
+			// Set all ammo to be fast
+
+			for (Ammo ammo : ammos) {
+				ammo.setFirespeed();
+			}
+
+
+
+			fuelEffectDuration--;
+			System.out.println(fuelEffectDuration);
+			if (fuelEffectDuration <= 0) {
+					fuel.changefuelhit();// end the powerup
+
+					fuelEffectDuration = 300;
+					// Reset ammo speeds if needed
+					for (Ammo ammo : ammos) {
+						ammo.resetSpeed(); // You may need to make this method
+
+				}
+			}
+
+		}
+		if (frameCounter == 100) {
 			fuel= new PowerUpFuel();
 		}
     	//if stage is beaten this if statement is responsible for the setup for the next stage.
