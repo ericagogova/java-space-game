@@ -74,9 +74,11 @@ public class Panel extends JPanel implements ActionListener, KeyListener {
     private boolean endGame = false;
 	/*Image of the background */
     private Image bg;
-	private PowerUpFuel fuel;
-	private int frameCounter = 0;
-	private int fuelEffectDuration = 300;
+
+	  private PowerUpFuel fuel;
+	  private int frameCounter = 0;
+	  private int fuelEffectDuration = 300;
+
 
 
 	/**
@@ -105,6 +107,7 @@ public class Panel extends JPanel implements ActionListener, KeyListener {
 		}
         for(int i=0; i<numUfo; i++){
         	ufos.add(new Ufo()); //Creating the Ufo Objects
+
         }
 
 
@@ -257,7 +260,9 @@ public class Panel extends JPanel implements ActionListener, KeyListener {
 		}
 
     	endTime = System.currentTimeMillis();
-
+		for (Ufo ufo : ufos) {
+			ufo.move(); // Only x changes
+		}
         /*
          * Object update methods.
          * Every Object in this game that is a paint component has an update
@@ -289,6 +294,32 @@ public class Panel extends JPanel implements ActionListener, KeyListener {
 				ufos.remove(i);
 			}
 		}
+
+		for (Ufo u : ufos) {
+
+			u.checkForUfoCollisions(ufos);
+		}
+		for (Ufo u: ufos) {
+			u.setCollided(false);
+		}
+
+
+
+		frameCounter++;
+
+		// Every 10 frames, do something
+		for (Ufo u : ufos) {
+			if (frameCounter % 10 == 0) {
+				u.checkForUfoCollisions(ufos);
+			}
+		}
+		// Move UFOs, draw, etc.
+
+		// Reset counter if needed to prevent overflow
+		if (frameCounter > 1000000) {
+			frameCounter = 0;
+		}
+		// 2. Check collisions and respond
 
 
 		repaint();//Calls the paintComponent method.

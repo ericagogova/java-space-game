@@ -2,6 +2,7 @@ package org.ergasia.javaspacegame;
 
 import java.awt.Image;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.Objects;
 import java.util.Random;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ public class Ufo {
     private int height;
     /*Boolean variable that checks if an Ufo is crushed or not */
 	private boolean ufoCrushed = false;
+	private boolean ufoCollided = false;
 	/*The image of the object */
     private Image image;
     /*In this variable is saved the total score */
@@ -34,6 +36,8 @@ public class Ufo {
 	private static int stageScore = 0;
 	/*Random object */
 	private Random rand;
+	private boolean movingRight;
+	private int frameCounter = 0;
 
 	/**
 	 * The Constructor.
@@ -41,21 +45,59 @@ public class Ufo {
 	 */
 	public Ufo() {
 		ImageIcon ii = null;
+
 		try {
 			ii = new ImageIcon(ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/ufo.png"))));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 		image = ii.getImage();
-        rand = new Random();
+		rand = new Random();
 
-		do{
+		do {
 			x = 40 + rand.nextInt(720);
 			y = 30 + rand.nextInt(440);
-		}while(x > 642 && y < 137);
+		} while (x > 642 && y < 137);
 
 		width = image.getWidth(null);
-        height = image.getHeight(null);
+		height = image.getHeight(null);
+
+		int random = rand.nextInt(2);
+		if (random==0){
+			movingRight=true;
+		}
+		else{
+			movingRight=false;
+		}
+	}
+
+
+	public void reverseDirection(){
+		movingRight= !movingRight;
+	}
+	public void move() {
+		x= getX();
+		y= getY();
+
+
+		int limitforx;
+		if (y<137){
+			limitforx=612;
+		}
+		else{
+			 limitforx=720;
+		}
+		if (movingRight) {
+			x++;
+			if (x >= limitforx) { // Adjust this upper limit to match your right boundary
+				movingRight = false;
+			}
+		} else {
+			x--;
+			if (x <= 40) { // Adjust this lower limit to match your left boundary
+				movingRight = true;
+			}
+		}
 	}
 
 	/**
@@ -94,6 +136,52 @@ public class Ufo {
 		}
 
 	}
+
+
+	public boolean collidesWith(Ufo other) {
+		return this.x < other.x + other.width &&
+				this.x + this.width > other.x &&
+				this.y < other.y + other.height &&
+				this.y + this.height > other.y;
+	}
+
+	public boolean isCollided() {
+		return ufoCollided;
+	}
+
+	public void setCollided(boolean value) {
+		this.ufoCollided = value;
+	}
+
+	public void setImage(Image img) {
+		this.image = img;
+	}
+
+	public void checkForUfoCollisions(ArrayList<Ufo> ufos) {
+		for (int i = 0; i < ufos.size(); i++) {
+			Ufo u1 = ufos.get(i);
+			if (u1.isCollided()) continue; // skip destroyed UFOs
+
+			for (int j = i + 1; j < ufos.size(); j++) {
+				Ufo u2 = ufos.get(j);
+				if (u2.isCollided()) continue;
+
+				if (u1.collidesWith(u2)) {
+					// Example: destroy both or reverse directions
+					u1.setCollided(true);
+					u2.setCollided(true);
+					u1.reverseDirection();
+					u2.reverseDirection();
+
+				}
+			}
+		}
+	}
+
+		// 4. (Optional) repaint or redraw your game screen here
+
+
+
 
 	/**
 	 * Get the ufo status. Crushed or no-crushed.
